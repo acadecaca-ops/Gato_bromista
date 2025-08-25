@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>¡Sorpresa de gato!</title>
+  <style>
+    body {font-family: system-ui, sans-serif; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; background:#f7f7f7;}
+    .card {background:white; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.08); padding:24px; text-align:center; max-width:420px;}
+    img {max-width:100%; border-radius:8px;}
+    h1{margin:12px 0 6px}
+    p{margin:6px 0 14px; color:#444}
+    button{margin:6px; padding:10px 14px; border-radius:8px; border:0; cursor:pointer; font-weight:600}
+    .danger{background:#ff595e; color:white}
+    .ok{background:#6bd26b; color:white}
+  </style>
+</head>
+<body>
+  <div class="card" role="dialog" aria-labelledby="title">
+    <img src="https://placekitten.com/600/340" alt="Gato divertido">
+    <h1 id="title">¡Sorpresa!</h1>
+    <p id="text">Anayan Cat dice: "¡idiota!" (es broma)</p>
+    <div>
+      <button onclick="speak()" class="danger">Reproducir voz</button>
+      <button onclick="closeWindow()" class="ok">Cerrar</button>
+    </div>
+    <p style="font-size:12px; color:#888; margin-top:12px">Esta broma es inocua. Pulsa Cerrar para irte.</p>
+  </div>
+
+  <script>
+    // Usa Web Speech API (si está disponible) para decir el texto mostrado
+    function speak() {
+      const text = document.getElementById('text').innerText;
+      if (!('speechSynthesis' in window)) {
+        alert('Tu navegador no soporta la síntesis de voz.');
+        return;
+      }
+      speechSynthesis.cancel();
+      const ut = new SpeechSynthesisUtterance(text);
+      // Ajustes opcionales
+      ut.rate = 1;
+      ut.pitch = 1;
+      // elige una voz disponible (si hay)
+      const voces = speechSynthesis.getVoices();
+      if (voces.length) {
+        // intenta elegir una voz en español si existe
+        ut.voice = voces.find(v => v.lang && v.lang.startsWith('es')) || voces[0];
+      }
+      speechSynthesis.speak(ut);
+    }
+
+    function closeWindow() {
+      // intenta cerrar si se abrió en nueva ventana; si no, simplemente redirige a about:blank
+      try { window.close(); } catch (e) {}
+      location.href = 'about:blank';
+    }
+
+    // auto reproducir la voz la primera vez que el usuario interactúe
+    window.addEventListener('click', function once(){ speak(); window.removeEventListener('click', once); });
+  </script>
+</body>
+</html>
